@@ -7,3 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+rust_decimal = "1.0.1"
+serde_json = "1.0.40"
+skiplist = "0.2.10"
+lazy_static = "1.3.0"
+stable-skiplist = "0.1.1"
