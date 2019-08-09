@@ -2,3 +2,6 @@
 **/*.rs.bk
 rusty-tags.vi
 src/tags
+matcher/target/*
+common/target/*
+

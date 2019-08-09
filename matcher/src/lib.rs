@@ -6,6 +6,8 @@ use skiplist::SkipList;
 use std::ops::Mul;
 use std::vec::Vec;
 
+use common::bitmap::bitmap;
+
 #[macro_use]
 extern crate lazy_static;
 extern crate rust_decimal;
@@ -18,14 +20,6 @@ const MAX_BITMAP: usize = 4096 / 8;
 
 lazy_static! {
     static ref DECIMAL_1E8: rust_decimal::Decimal = rust_decimal::Decimal::new(10000000, 0);
-}
-
-fn main() {
-    let a = Decimal::new(10, 0u32);
-    let b = Decimal::new(8, 0u32);
-    let c = a + b;
-    //println!("{}", DECIMAL_1E8);
-    println!("{}", c);
 }
 
 #[derive(Copy, Clone)]
@@ -223,54 +217,54 @@ pub struct price_node {
     used: bool,
 }
 
-struct bitmap {
-    //{{{
-    vector: Vec<u64>,
-} //}}}
+// struct bitmap {
+//     //{{{
+//     vector: Vec<u64>,
+// } //}}}
 
-impl Default for bitmap {
-    //{{{
-    #[inline]
-    fn default() -> bitmap {
-        bitmap { vector: vec![0] }
-    }
-} //}}}
+// impl Default for bitmap {
+//     //{{{
+//     #[inline]
+//     fn default() -> bitmap {
+//         bitmap { vector: vec![0] }
+//     }
+// } //}}}
 
-impl bitmap {
-    //{{{
-    fn find_unset(&mut self) -> usize {
-        if self.vector.len() == 0 {
-            self.vector.push(NEW_bit);
-            return 0;
-        }
+// impl bitmap {
+//     //{{{
+//     fn find_unset(&mut self) -> usize {
+//         if self.vector.len() == 0 {
+//             self.vector.push(NEW_bit);
+//             return 0;
+//         }
 
-        for i in 0..self.vector.len() {
-            if self.vector[i] == MAX_u64 {
-                continue;
-            }
+//         for i in 0..self.vector.len() {
+//             if self.vector[i] == MAX_u64 {
+//                 continue;
+//             }
 
-            for j in 0..MAX_len {
-                if (self.vector[0 as usize] & (1 << j)) == 0 {
-                    self.vector[i as usize] |= 1 << j;
-                    return (i * MAX_len + j);
-                }
-            }
-        }
-        self.vector.push(NEW_bit);
+//             for j in 0..MAX_len {
+//                 if (self.vector[0 as usize] & (1 << j)) == 0 {
+//                     self.vector[i as usize] |= 1 << j;
+//                     return (i * MAX_len + j);
+//                 }
+//             }
+//         }
+//         self.vector.push(NEW_bit);
 
-        self.vector.len() * MAX_len + 1
-    }
+//         self.vector.len() * MAX_len + 1
+//     }
 
-    fn clear(&mut self, slot: usize) {
-        if slot + 1 > (self.vector.len() * MAX_len) {
-            return;
-        }
-        let i = (slot / MAX_len) as usize;
-        let j = (slot % MAX_len) as usize;
+//     fn clear(&mut self, slot: usize) {
+//         if slot + 1 > (self.vector.len() * MAX_len) {
+//             return;
+//         }
+//         let i = (slot / MAX_len) as usize;
+//         let j = (slot % MAX_len) as usize;
 
-        self.vector[i] ^= (1 << j);
-    }
-} //}}}
+//         self.vector[i] ^= (1 << j);
+//     }
+// } //}}}
 
 macro_rules! println_bit {
     ($p:expr) => {
@@ -280,7 +274,6 @@ macro_rules! println_bit {
 
 #[test]
 fn bitmap() {
-    /*
     let mut bm = bitmap::default();
     println!("{}", &mut bm.find_unset());
     println!("{}", &mut bm.find_unset());
@@ -289,11 +282,4 @@ fn bitmap() {
     println_bit!(bm.vector[0]);
     println!("{}", &mut bm.find_unset());
     println_bit!(bm.vector[0]);
-    */
-    let mut skiplist = SkipList::new();
-    skiplist.insert(0, 0);
-    skiplist.insert(5, 1);
-    skiplist.insert(3, 2);
-    println!("--------------------");
-    println!("{}", skiplist.pop_front().unwrap());
 }
