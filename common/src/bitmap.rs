@@ -1,30 +1,35 @@
+use serde::{Deserialize, Serialize};
 use std::vec::Vec;
 
-const NEW_U64: u64 = 0xffffffff; // 2^64
-const MAX_LEN: usize = 0x100000; // 64
-const NEW_BIT: u64 = 0x1; // 1
+const NEW_U64: u128 = 0xffffffffffffffff; // 2^64
+const MAX_LEN: usize = 128; // 64
+const NEW_BIT: u128 = 0x0000000000000001; // 1
 
-macro_rules! println_bit {
-    ($p:expr) => {
-        println!("{:#018b}", $p)
-    };
-}
-
-pub struct bitmap {
+#[derive(Debug,Serialize, Deserialize)]
+pub struct BitMap {
     //{{{
-    pub vector: Vec<u64>,
+    pub vector: Vec<u128>,
 } //}}}
 
-impl Default for bitmap {
+impl Default for BitMap {
     //{{{
     #[inline]
-    fn default() -> bitmap {
-        bitmap { vector: vec![0] }
+    fn default() -> BitMap {
+        BitMap { vector: vec![0] }
     }
 } //}}}
 
-impl bitmap {
+impl BitMap {
     //{{{
+    pub fn new(size: usize) -> BitMap {
+        let num: usize = size / 128 + 1;
+        let mut v = vec![0u128; num];
+        v[0] = 1;
+        BitMap {
+            vector: v,
+        }
+    }
+
     #[inline]
     pub fn find_unset(&mut self) -> usize {
         if self.vector.len() == 0 {
@@ -40,7 +45,7 @@ impl bitmap {
             for j in 0..MAX_LEN {
                 if (self.vector[0 as usize] & (1 << j)) == 0 {
                     self.vector[i as usize] |= 1 << j;
-                    return (i * MAX_LEN + j);
+                    return i * MAX_LEN + j;
                 }
             }
         }
@@ -50,21 +55,22 @@ impl bitmap {
     }
 
     #[inline]
-    pub fn clear(&mut self, slot: usize) {
+    pub fn clear(&mut self, slot: & usize) {
         if slot + 1 > (self.vector.len() * MAX_LEN) {
             return;
         }
         let i = (slot / MAX_LEN) as usize;
         let j = (slot % MAX_LEN) as usize;
+        println!("{} {} {}", self.vector[i], i, j);
 
         self.vector[i] ^= (1 << j);
     }
 } //}}}
 
 #[test]
-fn bitmap() {
+fn BitMap() {
     //{{{
-    let mut bm = bitmap::default();
+    let mut bm = BitMap::default();
     println!("{}", &mut bm.find_unset());
     println!("{}", &mut bm.find_unset());
     println_bit!(bm.vector[0]);
